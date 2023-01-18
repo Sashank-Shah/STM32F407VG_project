@@ -1,8 +1,9 @@
 /*
  * gpio_x.c
  *
- *  Created on: Dec 1, 2022
- *      Author: owner
+ *
+ *      Author: Sashank Shah
+ *
  */
 
 #include "gpios_stm32f4xx.h"
@@ -127,7 +128,7 @@ void GPIO_init(gpio_Handler_t *pHandler)
 	if(pHandler->gpioConf.pinMode <= ANALOG_M)
 	{
 		temp = ((pHandler->gpioConf.pinMode) << 2*(pHandler->gpioConf.pinNumber)); //multiply 2 because each gpio port pin takes 2 bits.
-		pHandler->pGPIOx->MODER &= ~(0x3 << pHandler->gpioConf.pinNumber);		   //0x3 i.e 11 to clear two bits at a time
+		pHandler->pGPIOx->MODER &= ~(0x3 << 2*(pHandler->gpioConf.pinNumber));		   //0x3 i.e 11 to clear two bits at a time
 		pHandler->pGPIOx->MODER |= temp;
 	}
 
@@ -141,13 +142,13 @@ void GPIO_init(gpio_Handler_t *pHandler)
 	temp = 0; //reset the temp variable to use again
 
 	temp = ((pHandler->gpioConf.pinSpeed) << 2*(pHandler->gpioConf.pinNumber));
-	pHandler->pGPIOx->OSPEEDR &= ~(0x3 << pHandler->gpioConf.pinNumber);
+	pHandler->pGPIOx->OSPEEDR &= ~(0x3 << 2*(pHandler->gpioConf.pinNumber));
 	pHandler->pGPIOx->OSPEEDR |= temp;
 
 	/************ 3.Setting for Pull-up and Pull-down register *****************/
 	temp = 0;
 	temp = ((pHandler->gpioConf.puPdControl) << 2*(pHandler->gpioConf.pinNumber));
-	pHandler->pGPIOx->PUPDR &= ~(0x3 << pHandler->gpioConf.pinNumber); //0x3 i.e 11 to clear two bits at a time
+	pHandler->pGPIOx->PUPDR &= ~(0x3 << 2*(pHandler->gpioConf.pinNumber)); //0x3 i.e 11 to clear two bits at a time
 	pHandler->pGPIOx->PUPDR |= temp;
 
 	/*********** 4. Setting for Output Type *****************************/
