@@ -1,8 +1,8 @@
 /*
  * gpio.h
  *
- *  Created on: Dec 1, 2022
- *      Author: owner
+ *  Author: Sashank Shah
+ *
  */
 
 #ifndef INC_GPIOS_STM32F4XX_H_
@@ -13,22 +13,22 @@
 /*
  * @GPIO_PIN_Number
  */
-#define P0			1
-#define P1			2
-#define P2			3
-#define P3			4
-#define P4			5
-#define P5			6
-#define P6			7
-#define P7			8
-#define P8			9
-#define P9			10
-#define P10			11
-#define P11			12
-#define P12			13
-#define P13			14
-#define P14			15
-#define P15 		16
+#define P0			0
+#define P1			1
+#define P2			2
+#define P3			3
+#define P4			4
+#define P5			5
+#define P6			6
+#define P7			7
+#define P8			8
+#define P9			9
+#define P10			10
+#define P11			11
+#define P12			12
+#define P13			13
+#define P14			14
+#define P15 		15
 
 /*
  * @GPIO_PIN_MODE
@@ -120,10 +120,11 @@ void GPIO_portWrite(gpio_RegDef_t *pGPIOx, uint16_t value);
 void GPIO_pinToggle(gpio_RegDef_t *pGPIOx, uint8_t pinNumber);
 void GPIO_AltFun();
 
+
 /********* Api for IRQ configuration and ISR handling API *******************/
 
-void GPIO_IRQConfig();
-void GPIO_IRQHandle();
+void GPIO_IRQ(uint8_t, uint8_t);
+void GPIO_IRQ_PRTY(uint8_t, uint8_t);
 
 
 
