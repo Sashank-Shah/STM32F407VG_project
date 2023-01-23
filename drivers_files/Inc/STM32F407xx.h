@@ -278,6 +278,21 @@ typedef struct
 #define NVIC_IPR6			((_vo uint32_t*)0xE000E418)
 #define NVIC_IPR7			((_vo uint32_t*)0xE000E41C)
 
+#define NVIC_PRTY_BASEADDR		0xE000E400U
+
+
+
+/*--------------------structure for NVIC Parity registers----------------*/
+typedef struct
+{
+	_vo uint32_t NVIC_PTY[60];   //NVIC Parity registers numbered from 0 to 59
+}nvic_RegDef_t;
+
+#define NVIC_PTR			((nvic_RegDef_t*)NVIC_PRTY_BASEADDR)
+
+
+
+
 
 
 /* misc. macros */

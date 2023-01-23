@@ -118,7 +118,7 @@ uint16_t GPIO_portRead(gpio_RegDef_t *pGPIOx);
 void GPIO_pinWrite(gpio_RegDef_t *pGPIOx, uint8_t pinNumber, uint8_t value);
 void GPIO_portWrite(gpio_RegDef_t *pGPIOx, uint16_t value);
 void GPIO_pinToggle(gpio_RegDef_t *pGPIOx, uint8_t pinNumber);
-void GPIO_AltFun();
+
 
 
 /********* Api for IRQ configuration and ISR handling API *******************/
