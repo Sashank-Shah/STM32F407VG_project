@@ -135,6 +135,34 @@ void GPIO_init(gpio_Handler_t *pHandler)
 	//1.1 Setting for Interrupt Mode
 	else
 	{
+		if(pHandler->gpioConf.pinMode == INT_FT)
+		{
+			EXTI->FTSR |= (1 << pHandler->gpioConf.pinNumber);
+			EXTI->RTSR &= ~(1 << pHandler->gpioConf.pinNumber);
+
+		}
+		else if(pHandler->gpioConf.pinMode == INT_RT)
+		{
+			EXTI->RTSR |= (1 << pHandler->gpioConf.pinNumber);
+			EXTI->FTSR &= ~(1 << pHandler->gpioConf.pinNumber);
+		}
+		else if(pHandler->gpioConf.pinMode == INT_RFT)
+		{
+			EXTI->FTSR |= (1 << pHandler->gpioConf.pinNumber);
+			EXTI->RTSR |= (1 << pHandler->gpioConf.pinNumber);
+		}
+
+		//specify which gpio to use for the corresponding interrupt pin
+		uint8_t arrNumber = 0;
+		uint8_t bitNumber = 0;
+		arrNumber = pHandler->gpioConf.pinNumber / 4;
+		bitNumber = pHandler->gpioConf.pinNumber % 4;
+		uint8_t gpioCode = GPIO_CODE(pHandler->pGPIOx);
+		SYSCFG_EN();
+		SYSCFG->EXTICR[arrNumber] |= (gpioCode << (4*bitNumber));
+
+		//enable interrupt mask register
+		EXTI->IMR |= (1 << pHandler->gpioConf.pinNumber);
 
 	}
 
@@ -335,12 +363,78 @@ void GPIO_pinToggle(gpio_RegDef_t *pGPIOx, uint8_t pinNumber)
 {
 	pGPIOx->ODR ^= (1 << pinNumber);
 }
-void GPIO_AltFun();
 
-/********* Api for IRQ configuration and ISR handling API *******************/
 
-void GPIO_IRQConfig();
-void GPIO_IRQHandle();
+/******************* Enable the IRQ******************
+ *
+ * @fn				: Enables the Specific IRQ
+ *
+ * @brief			: None
+ *
+ * @param[in]		: IRQ Number
+ * @param[in]		: Enable or Disable
+ *
+ * @return 			: None
+ *
+ * @note			: None
+*/
+void GPIO_IRQ(uint8_t irq, uint8_t ENorDS)
+{
+	if(ENorDS == ENABLE)
+	{
+		if(irq < 32)
+		{
+			*NVIC_ISER0 |= (1 << irq);
+		}
+		else if(irq > 31 && irq < 64)
+		{
+			*NVIC_ISER1 |= (1 << (irq%32));
+		}
+		else if(irq > 63 && irq < 96)
+		{
+			*NVIC_ISER2 |= (1 << (irq%64));
+		}
+	}
+	else
+	{
+		if(irq < 32)
+		{
+			*NVIC_ICER0 |= (1<<irq);
+		}
+		else if(irq > 31 && irq < 64)
+		{
+			*NVIC_ICER1 |= (1<<(irq%32));
+		}
+		else if(irq > 63 && irq < 96)
+		{
+			*NVIC_ICER2 |= (1<<(irq%64));
+		}
+	}
+}
+
+
+/******************* Setting the priority ******************
+ *
+ * @fn				: Sets the priority for the IRQ
+ *
+ * @brief			: IRQ priority can be configured using the Function
+ *
+ * @param[in]		: IRQ Number
+ * @param[in]		: IRQ Priority
+ *
+ * @return 			: None
+ *
+ * @note			: None
+*/
+void GPIO_IRQ_PRTY(uint8_t irq, uint8_t prty)
+{
+	uint8_t ipr_num = irq / 4;
+	uint8_t ipr_sec = irq % 4;
+	uint8_t ipr_position = ((8 * ipr_sec) + 4); //each section takes 8 bits but only upper nibbles are used
+	//Hence, we have to shift the position by 8*section + 4 i.e. about 12 bits shift is required
+	NVIC_PTR->NVIC_PTY[ipr_num] |= (prty << ipr_position);
+
+}
 
 
 

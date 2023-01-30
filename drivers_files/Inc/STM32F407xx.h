@@ -1,8 +1,8 @@
 /*
  * 		STM32F407xx.h
  *
- *  	Created on: Oct 14, 2022
- *      Author: SASHANK SHAH
+ *  	Author: SASHANK SHAH
+ *		It is a device specific header file, check for your microcontroller.
  */
 
 #ifndef INC_STM32F407XX_H_
@@ -75,6 +75,7 @@
 
 
 
+
 typedef struct
 {
 	_vo uint32_t MODER;		//GPIO port mode register				 Address offset: 0x00
@@ -90,7 +91,8 @@ typedef struct
 
 }gpio_RegDef_t;
 
-/**********GPIOx is indicated by Px (shorthand for PORTx)*********************/
+
+/**********GPIOx*********************/
 #define GPIOA 					((gpio_RegDef_t*)GPIOA_BADDR)  //makes it easy to use
 #define GPIOB					((gpio_RegDef_t*)GPIOB_BADDR)  // pointer to base address of GPIOx
 #define GPIOC 					((gpio_RegDef_t*)GPIOC_BADDR)
@@ -140,17 +142,17 @@ typedef struct
 	_vo uint32_t APB2ENR;		//RCC APB2 peripheral clock enable 		Address offset: 0x44
 	uint32_t RESD3[2];
 	_vo uint32_t AHB1LPENR;    //RCC AHB1 peripheral clock enable in low power mode register	Address offset: 0x50
-	_vo uint32_t AHB2LPENR;	//RCC AHB2 peripheral clock enable in low power mode register	Address offset: 0x54
-	_vo uint32_t AHB3LPENR;	//RCC AHB3 peripheral clock enable in low power mode register	Address offset: 0x58
+	_vo uint32_t AHB2LPENR;	   //RCC AHB2 peripheral clock enable in low power mode register	Address offset: 0x54
+	_vo uint32_t AHB3LPENR;	   //RCC AHB3 peripheral clock enable in low power mode register	Address offset: 0x58
 	uint32_t RESD4;
-	_vo uint32_t APB1LPENR;	//RCC APB1 peripheral clock enable in low power mode register	Address offset: 0x60
-	_vo uint32_t APB2LPENR;	//RCC APB2 peripheral clock enabled in low power mode register	Address offset: 0x64
+	_vo uint32_t APB1LPENR;	   //RCC APB1 peripheral clock enable in low power mode register	Address offset: 0x60
+	_vo uint32_t APB2LPENR;	   //RCC APB2 peripheral clock enabled in low power mode register	Address offset: 0x64
 	uint32_t RESD5[2];
 
 	_vo uint32_t BDCR;			//RCC Backup domain control register 	Address offset: 0x70
 	_vo uint32_t CSR;			//RCC clock control & status register 	Address offset: 0x74
 	uint32_t RESD6[2];
-	_vo uint32_t SSCGR;		//RCC spread spectrum clock generation register 	Address offset: 0x80
+	_vo uint32_t SSCGR;		    //RCC spread spectrum clock generation register 	Address offset: 0x80
 	_vo uint32_t PLLI2SCFGR;	//RCC PLLI2S configuration register					Address offset: 0x84
 	_vo uint32_t PLLSAICFGR;	//RCC PLL configuration register					Address offset: 0x88
 	_vo uint32_t DCKCFGR;		//RCC Dedicated Clock Configuration Register		Address offset: 0x8C
@@ -158,6 +160,50 @@ typedef struct
 }rcc_RegDef_t;
 
 #define RCC 			((rcc_RegDef_t*)RCC_BADDR)
+
+
+
+/*--------------------structure for EXTI registers----------------*/
+typedef struct
+{
+	_vo uint32_t IMR; 		//EXTI interrupt mask register       			Address offset: 0x00
+	_vo uint32_t EMR;		//EXTI event mask register           			Address offset: 0x04
+	_vo uint32_t RTSR;		//EXTI rising trigger selection register		Address offset: 0x08
+	_vo uint32_t FTSR;		//EXTI falling trigger selection register		Address offset: 0x0C
+	_vo uint32_t SWIER;		//EXTI software interrupt event register		Address offset: 0x10
+	_vo uint32_t PR;		//EXTI pending register							Address offset: 0x14
+
+}exti_RegDef_t;
+
+
+#define	EXTI			((exti_RegDef_t*)EXTI_BADDR)
+
+
+
+/*--------------------GPIO code for Port select through SYSCFG----------------*/
+#define GPIO_CODE(X)	   ((X == GPIOA)?0:\
+							(X == GPIOB)?1:\
+							(X == GPIOC)?2:\
+							(X == GPIOD)?3:\
+							(X == GPIOE)?4:\
+							(X == GPIOF)?5:\
+							(X == GPIOG)?6:\
+							(X == GPIOH)?7:\
+							(X == GPIOI)?8:0)
+
+/*--------------------structure for SYSCFG registers----------------*/
+typedef struct
+{
+	_vo uint32_t MEMRMP;	//SYSCFG memory remap register						Address offset: 0x00
+	_vo uint32_t PMC;		//SYSCFG peripheral mode configuration  			Address offset: 0x04
+	_vo uint32_t EXTICR[4];	//SYSCFG external interrupt configuration (1 to 4)	Address offset: 0x08 - 0x14
+	uint32_t RESD7[2];      //Reserved
+	_vo uint32_t CMPCR;	    //SYSCFG compensation cell control register			Address offset: 0x20
+
+}syscfg_RegDef_t;
+
+#define SYSCFG			((syscfg_RegDef_t *)SYSCFG_BADDR)
+
 
 /*-------------------GPIOx clock enable---------------------*/
 #define GPIOA_CLK_EN() 				(RCC->AHB1ENR |= (1<<0))
@@ -191,6 +237,63 @@ typedef struct
 #define GPIOG_RESET() 				do{ (RCC->AHB1RSTR |= (1<<6)); (RCC->AHB1RSTR &= ~(1<<6)); }while(0)
 #define GPIOH_RESET() 				do{ (RCC->AHB1RSTR |= (1<<7)); (RCC->AHB1RSTR &= ~(1<<7)); }while(0)
 #define GPIOI_RESET() 				do{ (RCC->AHB1RSTR |= (1<<8)); (RCC->AHB1RSTR &= ~(1<<8)); }while(0)
+
+
+#define SYSCFG_EN()					(RCC->AHB2ENR |= (1<<14))
+
+/*----------------------IRQ numbers for EXTI--------------------------*/
+#define IRQ0						6
+#define IRQ1						7
+#define IRQ2						8
+#define IRQ3						9
+#define IRQ4						10
+#define IRQ9_5						23
+#define IRQ15_10					40
+
+/*------------------NVIC registers--------------------------*/
+#define NVIC_ISER0			((_vo uint32_t*)0xE000E100)
+#define NVIC_ISER1			((_vo uint32_t*)0xE000E104)
+#define NVIC_ISER2			((_vo uint32_t*)0xE000E108)
+#define NVIC_ISER3			((_vo uint32_t*)0xE000E10C)
+#define NVIC_ISER4			((_vo uint32_t*)0xE000E110)
+#define NVIC_ISER5			((_vo uint32_t*)0xE000E114)
+#define NVIC_ISER6			((_vo uint32_t*)0xE000E118)
+#define NVIC_ISER7			((_vo uint32_t*)0xE000E11C)
+
+#define NVIC_ICER0			((_vo uint32_t*)0XE000E180)
+#define NVIC_ICER1			((_vo uint32_t*)0XE000E184)
+#define NVIC_ICER2			((_vo uint32_t*)0XE000E188)
+#define NVIC_ICER3			((_vo uint32_t*)0XE000E18C)
+#define NVIC_ICER4			((_vo uint32_t*)0XE000E190)
+#define NVIC_ICER5			((_vo uint32_t*)0XE000E194)
+#define NVIC_ICER6			((_vo uint32_t*)0XE000E198)
+#define NVIC_ICER7			((_vo uint32_t*)0XE000E19C)
+
+#define NVIC_IPR0			((_vo uint32_t*)0xE000E400)
+#define NVIC_IPR1			((_vo uint32_t*)0xE000E404)
+#define NVIC_IPR2			((_vo uint32_t*)0xE000E408)
+#define NVIC_IPR3			((_vo uint32_t*)0xE000E40C)
+#define NVIC_IPR4			((_vo uint32_t*)0xE000E410)
+#define NVIC_IPR5			((_vo uint32_t*)0xE000E414)
+#define NVIC_IPR6			((_vo uint32_t*)0xE000E418)
+#define NVIC_IPR7			((_vo uint32_t*)0xE000E41C)
+
+#define NVIC_PRTY_BASEADDR		0xE000E400U
+
+
+
+/*--------------------structure for NVIC Parity registers----------------*/
+typedef struct
+{
+	_vo uint32_t NVIC_PTY[60];   //NVIC Parity registers numbered from 0 to 59
+}nvic_RegDef_t;
+
+#define NVIC_PTR			((nvic_RegDef_t*)NVIC_PRTY_BASEADDR)
+
+
+
+
+
 
 /* misc. macros */
 #define ENABLE 						1
