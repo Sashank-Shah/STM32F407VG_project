@@ -239,7 +239,7 @@ typedef struct
 #define GPIOI_RESET() 				do{ (RCC->AHB1RSTR |= (1<<8)); (RCC->AHB1RSTR &= ~(1<<8)); }while(0)
 
 
-#define SYSCFG_EN()					(RCC->AHB2ENR |= (1<<14))
+#define SYSCFG_EN()					(RCC->APB2ENR |= (1<<14))
 
 /*----------------------IRQ numbers for EXTI--------------------------*/
 #define IRQ0						6
@@ -278,19 +278,19 @@ typedef struct
 #define NVIC_IPR6			((_vo uint32_t*)0xE000E418)
 #define NVIC_IPR7			((_vo uint32_t*)0xE000E41C)
 
-#define NVIC_PRTY_BASEADDR		0xE000E400U
+#define NVIC_PRTY		((_vo uint8_t *)0xE000E400U)
 
 
 
 /*--------------------structure for NVIC Parity registers----------------*/
-typedef struct
+/*typedef struct
 {
 	_vo uint32_t NVIC_PTY[60];   //NVIC Parity registers numbered from 0 to 59
 }nvic_RegDef_t;
 
 #define NVIC_PTR			((nvic_RegDef_t*)NVIC_PRTY_BASEADDR)
 
-
+*/
 
 
 

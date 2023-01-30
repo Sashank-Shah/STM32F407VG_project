@@ -125,6 +125,7 @@ void GPIO_pinToggle(gpio_RegDef_t *pGPIOx, uint8_t pinNumber);
 
 void GPIO_IRQ(uint8_t, uint8_t);
 void GPIO_IRQ_PRTY(uint8_t, uint8_t);
+void GPIO_ISRHandling(uint8_t);
 
 
 

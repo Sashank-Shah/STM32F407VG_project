@@ -432,9 +432,19 @@ void GPIO_IRQ_PRTY(uint8_t irq, uint8_t prty)
 	uint8_t ipr_sec = irq % 4;
 	uint8_t ipr_position = ((8 * ipr_sec) + 4); //each section takes 8 bits but only upper nibbles are used
 	//Hence, we have to shift the position by 8*section + 4 i.e. about 12 bits shift is required
-	NVIC_PTR->NVIC_PTY[ipr_num] |= (prty << ipr_position);
+	//NVIC_PTR->NVIC_PTY[ipr_num] |= (prty << ipr_position);
+	*( NVIC_PRTY + ipr_num) |= (prty << ipr_position);
 
 }
 
+void GPIO_ISRHandling(uint8_t pinNumber)
+{
+	//Check the pending register is set or cleared by the interrupt
+	if(EXTI->PR & (1 << pinNumber))
+	{
+		//To clear the pr we have to set the bit
+		EXTI->PR |= (1<<pinNumber); //clear the interrupt corresponding to the pr register
+	}
+}
 
 
