@@ -16,7 +16,7 @@ void delay()
 	for(uint32_t i = 0; i<50000/2; i++);
 }
 
-void button(gpio_RegDef_t *)
+void button()
 {
 	//input pin configuration
 		gpio_Handler_t GPIO_A; //INPUT PIN
@@ -40,7 +40,7 @@ int main()
 {
 
 
-
+	button();
 	/*---------------------------gpio configuration for SPI2 on GPIOB-------------------------------*/
 
 	gpio_Handler_t SPI2_B; //OUTPUT PIN
@@ -98,7 +98,6 @@ int main()
 
 
 	SPI_SSOE(SPI2, ENABLE); //NSS toggles in accordance with the SPE bit and is managed by the hardware
-
 
 
 	while(1)
