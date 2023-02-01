@@ -293,6 +293,44 @@ typedef struct
 */
 
 
+/*------------------------------ SPI ---------------------------------------------*/
+
+typedef struct
+{
+	_vo uint32_t SPI_CR1;			//SPI control Register 				Address Offset 0x00
+	_vo uint32_t SPI_CR2;			//SPI control Register 				Address Offset 0x04
+	_vo uint32_t SPI_SR;			//SPI status register				Address Offset 0x08
+	_vo uint32_t SPI_DR;			//SPI data register					Address Offset 0x0C
+	_vo uint32_t SPI_CRCPR;			//SPI CRC polynomial register		Address Offset 0x10
+	_vo uint32_t SPI_RXCRCR;		//SPI RX CRC register				Address Offset 0x14
+	_vo uint32_t SPI_TXCRCR;		//SPI TX CRC register				Address Offset 0x18
+	_vo uint32_t SPI_I2SCFGR;		//SPI_I2S configuration register 	Address Offset 0x1C
+	_vo uint32_t SPI_I2SPR;			//SPI_I2S prescaler register		Address Offset 0x20
+
+}spi_RegDef_t;
+
+
+#define SPI1				((spi_RegDef_t*)SPI1_BADDR)
+#define SPI2				((spi_RegDef_t*)SPI2_BADDR)
+#define SPI3				((spi_RegDef_t*)SPI3_BADDR)
+
+
+
+//Peripheral clock enable macro for SPI
+#define SPI1_EN()			(RCC->APB2ENR |= (1<<12))
+#define SPI2_EN()			(RCC->APB1ENR |= (1<<14))
+#define SPI3_EN()			(RCC->APB1ENR |= (1<<15))
+
+//Peripheral clock disable macro for SPI
+#define SPI1_DS()			(RCC->APB2ENR &= ~(1<<12))
+#define SPI2_DS()			(RCC->APB1ENR &= ~(1<<14))
+#define SPI3_DS()			(RCC->APB1ENR &= ~(1<<15))
+
+//SPI resets
+#define SPI1_RESET()		do{ (RCC->APB2ENR |= (1<<12)); (RCC->APB2ENR &= ~(1<<12)); }while(0)
+#define SPI2_RESET()		do{ (RCC->APB1ENR |= (1<<14)); (RCC->APB2ENR &= ~(1<<12)); }while(0)
+#define SPI3_RESET()		do{ (RCC->APB1ENR |= (1<<15)); (RCC->APB1ENR &= ~(1<<15)); }while(0)
+
 
 
 /* misc. macros */
@@ -306,4 +344,5 @@ typedef struct
 //#define LOW							RESET {defined in GPIO_header file}
 
 #include "gpios_stm32f4xx.h"
+#include "spi_stm32f4xx.h"
 #endif /* INC_STM32F407XX_H_ */
