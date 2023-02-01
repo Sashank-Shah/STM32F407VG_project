@@ -156,8 +156,8 @@ void SPI_DInit(spi_RegDef_t *pSPI);
 void SSI_EN(spi_RegDef_t *pSPI, uint8_t ENorDS);
 
 
-void SPI_START(spi_RegDef_t *pSPI, uint8_t ENorDS);
-void SPI_STOP(spi_RegDef_t *pSPI, uint8_t ENorDS);
+void SPI_START(spi_RegDef_t *pSPI);
+void SPI_STOP(spi_RegDef_t *pSPI);
 
 /*----------------------SPI Read data coming to the device--------------------------------------*/
 //void SPI_Read(spi_RegDef_t *pSPI);

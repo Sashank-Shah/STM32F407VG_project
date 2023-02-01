@@ -56,29 +56,32 @@ void SSI_EN(spi_RegDef_t *pSPI, uint8_t ENorDS)
 }
 
 
-void SPI_START(spi_RegDef_t *pSPI, uint8_t ENorDS)
+void SPI_START(spi_RegDef_t *pSPI)
 {
-	if(ENorDS == ENABLE)
-	{
 		pSPI->SPI_CR1 |= (1 << SPE);
-	}
-	else
-	{
-		pSPI->SPI_CR1 &= ~(1 << SPE);
-	}
 
 }
 
 
 
-void SPI_STOP(spi_RegDef_t *pSPI, uint8_t ENorDS)
+void SPI_STOP(spi_RegDef_t *pSPI)
 {
+	pSPI->SPI_CR1 &= ~(1 << SPE);
 
-	if(ENorDS == DISABLE)
+}
+
+
+
+void SPI_SSOE(spi_RegDef_t *pSPI, uint8_t ENorDS)
+{
+	if(ENorDS == ENABLE)
 	{
-		pSPI->SPI_CR1 &= ~(1 << SPE);
+		pSPI->SPI_CR2 |= (1 << SSOE);
 	}
-
+	else
+	{
+		pSPI->SPI_CR2 &= ~(1 << SSOE);
+	}
 }
 
 
@@ -146,10 +149,40 @@ void SPI_Send(spi_RegDef_t *pSPI, uint8_t *data, uint32_t len)
 			(uint16_t *)data++;
 
 		}
-		//if DFF is set it means that the 16BIT data frame is selected
+		//if DFF is 0 it means that the 8BIT data frame is selected
 		else if ((pSPI->SPI_CR1 & (1 << DFF)) == 0)
 		{
 			pSPI->SPI_DR = *data;
+			len--;
+			data++;
+		}
+
+	}
+}
+
+
+void SPI_Recieve(spi_RegDef_t *pSPI, uint8_t *RXBuffer, uint32_t len)
+{
+	//loop till the data is empty
+	while(len>0)
+	{
+		//wait until the RX buffer is full
+
+		while(!(pSPI->SPI_SR & (1<<RXNE)));
+
+		//if DFF is set it means that the 16BIT data frame is selected
+		if(pSPI->SPI_CR1 & (1 << DFF))
+		{
+			*((uint16_t *)RXBuffer) = pSPI->SPI_DR;
+			len--;
+			len--;
+			(uint16_t *)RXBuffer++;
+
+		}
+		//if DFF is 0 it means that the 8BIT data frame is selected
+		else if ((pSPI->SPI_CR1 & (1 << DFF)) == 0)
+		{
+			*RXBuffer = pSPI->SPI_DR;
 			len--;
 			data++;
 		}
