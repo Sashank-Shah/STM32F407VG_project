@@ -9,6 +9,7 @@
 #define INC_STM32F407XX_H_
 
 #include <stdint.h>
+#include <stddef.h>
 /*--------------------------- BASE ADDRESS OF MEMORY--------------------------------*/
 //Reference manual -> Section 3
 #define _vo					volatile
@@ -241,7 +242,7 @@ typedef struct
 
 #define SYSCFG_EN()					(RCC->APB2ENR |= (1<<14))
 
-/*----------------------IRQ numbers for EXTI--------------------------*/
+/*----------------------IRQ numbers--------------------------*/
 #define IRQ0						6
 #define IRQ1						7
 #define IRQ2						8
@@ -249,6 +250,9 @@ typedef struct
 #define IRQ4						10
 #define IRQ9_5						23
 #define IRQ15_10					40
+#define SPI1_IRQ					35
+#define SPI2_IRQ					36
+#define SPI3_IRQ					51
 
 /*------------------NVIC registers--------------------------*/
 #define NVIC_ISER0			((_vo uint32_t*)0xE000E100)
@@ -328,9 +332,105 @@ typedef struct
 
 //SPI resets
 #define SPI1_RESET()		do{ (RCC->APB2ENR |= (1<<12)); (RCC->APB2ENR &= ~(1<<12)); }while(0)
-#define SPI2_RESET()		do{ (RCC->APB1ENR |= (1<<14)); (RCC->APB2ENR &= ~(1<<12)); }while(0)
+#define SPI2_RESET()		do{ (RCC->APB1ENR |= (1<<14)); (RCC->APB1ENR &= ~(1<<14)); }while(0)
 #define SPI3_RESET()		do{ (RCC->APB1ENR |= (1<<15)); (RCC->APB1ENR &= ~(1<<15)); }while(0)
 
+
+
+
+
+
+/*-----------------------------i2c structure---------------------*/
+
+typedef struct
+{
+	_vo uint32_t I2C_CR1;		//I2C Control register 1    	Address Offset 0x00
+	_vo uint32_t I2C_CR2;		//I2C Control register 2 		Address offset: 0x04
+	_vo uint32_t I2C_OAR1;		//I2C Own address register 1	Address offset: 0x08
+	_vo uint32_t I2C_OAR2;		//I2C Own address register 2 	Address offset: 0x0C
+	_vo uint32_t I2C_DR;		//2C Data register				Address offset: 0x10
+	_vo uint32_t I2C_SR1;		//I2C Status register 1			Address offset: 0x14
+	_vo uint32_t I2C_SR2;		//I2C Status register 2			Address offset: 0x18
+	_vo uint32_t I2C_CCR;		//I2C Clock control register 	Address offset: 0x1C
+	_vo uint32_t I2C_TRISE;		//I2C TRISE register 			Address offset: 0x20
+	_vo uint32_t I2C_FLTR;		//I2C FLTR register				Address offset: 0x24
+
+}i2c_RegDef_t;
+
+
+
+#define I2C1				((i2c_RegDef_t *)I2C1_BADDR)
+#define I2C2				((i2c_RegDef_t *)I2C2_BADDR)
+#define I2C3				((i2c_RegDef_t *)I2C3_BADDR)
+
+
+//I2C peripheral clk enable
+#define I2C1_EN()			(RCC->APB1ENR |= (1 << 21))
+#define I2C2_EN()			(RCC->APB1ENR |= (1 << 22))
+#define I2C3_EN()			(RCC->APB1ENR |= (1 << 23))
+
+
+//I2C peripheral clk disable
+#define I2C1_DS()			(RCC->APB1ENR &= ~(1 << 21))
+#define I2C2_DS()			(RCC->APB1ENR &= ~(1 << 22))
+#define I2C3_DS()			(RCC->APB1ENR &= ~(1 << 23))
+
+
+//I2C clk reset
+#define I2C1_RESET()		do{ (RCC->APB1ENR |= (1<<21)); (RCC->APB1ENR &= ~(1<<21)); }while(0)
+#define I2C2_RESET()		do{ (RCC->APB1ENR |= (1<<22)); (RCC->APB1ENR &= ~(1<<22)); }while(0)
+#define I2C3_RESET()		do{ (RCC->APB1ENR |= (1<<23)); (RCC->APB1ENR &= ~(1<<23)); }while(0)
+
+/*------------------------------------------------------------------------------------------------*/
+
+
+
+
+/*-----------------------------usart structure---------------------*/
+
+typedef struct
+{
+	_vo uint32_t USART_SR;		//Status register 						Address offset: 0x00
+	_vo uint32_t USART_DR;		//Data register 						Address offset: 0x04
+	_vo uint32_t USART_BRR;		//Baud rate register 					Address offset: 0x08
+	_vo uint32_t USART_CR1;		//Control register 						Address offset: 0x0C
+	_vo uint32_t USART_CR2;		//Control register 2 					Address offset: 0x10
+	_vo uint32_t USART_CR3;		//Control register 3 					Address offset: 0x14
+	_vo uint32_t USART_GTPR;	//Guard time and prescaler register		Address offset: 0x18
+
+}usart_RegDef_t;
+
+
+#define USART1  			((USART_RegDef_t*)USART1_BADDR)
+#define USART2  			((USART_RegDef_t*)USART2_BADDR)
+#define USART3  			((USART_RegDef_t*)USART3_BADDR)
+#define UART4  				((USART_RegDef_t*)UART4_BADDR)
+#define UART5  				((USART_RegDef_t*)UART5_BADDR)
+#define USART6  			((USART_RegDef_t*)USART6_BADDR)
+
+
+//Peripheral clk enable
+#define USART1_EN() (RCC->APB2ENR |= (1 << 4))
+#define USART2_EN() (RCC->APB1ENR |= (1 << 17))
+#define USART3_EN() (RCC->APB1ENR |= (1 << 18))
+#define UART4_EN()  (RCC->APB1ENR |= (1 << 19))
+#define UART5_EN()  (RCC->APB1ENR |= (1 << 20))
+#define USART6_EN() (RCC->APB2ENR |= (1 << 5))
+
+
+//Peripheral clk disable
+
+#define USART1_DS() (RCC->APB2ENR &= ~(1 <<4))
+#define USART2_DS() (RCC->APB1ENR &= ~(1 <<17))
+#define USART3_DS() (RCC->APB1ENR &= ~(1 <<18))
+#define UART4_DS()  (RCC->APB1ENR &= ~(1 <<19))
+#define UART5_DS()  (RCC->APB1ENR &= ~(1 <<20))
+#define USART6_DS() (RCC->APB2ENR &= ~(1 <<5))
+
+
+
+
+/*-----------------------------------------------------------------------------------------*/
 
 
 /* misc. macros */
@@ -345,4 +445,8 @@ typedef struct
 
 #include "gpios_stm32f4xx.h"
 #include "spi_stm32f4xx.h"
+#include "i2c_stm32f4xx.h"
+#include "usart_stm32f407xx.h"
+
+
 #endif /* INC_STM32F407XX_H_ */

@@ -72,6 +72,15 @@
 #define SLAVE_SW_DS				0
 #define SLAVE_SW_EN				1
 
+
+/*
+ * @SPI BUFFER STATES
+ */
+
+#define SPI_READY				0
+#define SPI_BSY_RX				1
+#define SPI_BSY_TX				2
+
 /*
  * SPI_CR1 Bit fields
  */
@@ -118,6 +127,8 @@
 #define BSY					7
 #define FRE					8
 
+
+
 /*----------------- User entered data for SPI --------------------------*/
 typedef struct
 {
@@ -137,8 +148,16 @@ typedef struct
 /*--------------- Handling structure--------------------------*/
 typedef struct
 {
-	spi_RegDef_t *pSPI;
-	spi_Config_t spiConf;
+	spi_RegDef_t *pSPI;		//pointer to the SPI base address
+	spi_Config_t spiConf;	//variable to the spi_config_t type structure
+	uint8_t 	 *pTXBuffer; //pointer to the TX buffer address
+	uint8_t 	 *pRXBuffer; //pointer to the RX buffer address
+	uint32_t	 TXlen;		//lenght of the TX buffer
+	uint32_t	 RXlen;		//length of the RX buffer
+	uint8_t		 TxState;	//TX state busy or not
+	uint8_t		 RxState;	//RX state busy or not
+
+
 
 }spi_Handler_t;
 
@@ -159,16 +178,25 @@ void SSI_EN(spi_RegDef_t *pSPI, uint8_t ENorDS);
 void SPI_START(spi_RegDef_t *pSPI);
 void SPI_STOP(spi_RegDef_t *pSPI);
 
+void SPI_SSOE(spi_RegDef_t *pSPI, uint8_t ENorDS);
+
 /*----------------------SPI Read data coming to the device--------------------------------------*/
-//void SPI_Read(spi_RegDef_t *pSPI);
+
 
 /*----------------------SPI Send data from the device-------------------------------------*/
 void SPI_Send(spi_RegDef_t *pSPI, uint8_t *data, uint32_t len);
+void SPI_Recieve(spi_RegDef_t *pSPI, uint8_t *RXBuffer, uint32_t len);
 
-
-
+uint8_t SPI_SendINT(spi_Handler_t *pSPIHandle, uint8_t *pTXBuffer, uint32_t len);
+uint8_t SPI_RecieveINT(spi_Handler_t *pSPIHandle, uint8_t *pRXBuffer, uint32_t len);
 
 /*----------------------SPI interrupt handling APIs-----------------*/
+
+/********* Api for IRQ configuration and ISR handling API *******************/
+
+void SPI_IRQ(uint8_t irq, uint8_t ENorDS);
+void SPI_IRQ_PRTY(uint8_t irq, uint8_t ptry);
+void SPI_ISRHandling(spi_Handler_t *pSPIHandle);
 
 
 #endif /* INC_SPI_STM32F4XX_H_ */
